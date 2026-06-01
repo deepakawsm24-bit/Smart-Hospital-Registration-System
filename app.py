@@ -9,7 +9,8 @@ cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEX
 conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
-menu = st.radio("Select Option",["New Registration","Search Patient","View ALL Patients"])
+menu = st.radio("Select Option",["New Registration","Search Patient","View ALL Patients","Update Patient"])
+if menu == "New Registration":
 patient_id = "PAT" + str(random.randint(1000,9999))
 st.subheader("Patient Registration Form")
 name = st.text_input("Patient Name")
