@@ -1,22 +1,28 @@
 import streamlit as st
-st.title("Smart Hospital Registration System")
-
-st.header("Patient Registration Form")
-
+from datetime import datetime
+import random
+st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
+st.title("Smart Hospital Registration & Admission System")
+patient_id = "PAT" + str(random.randint(1000,9999))
+st.subheader("Patient Registration Form")
 name = st.text_input("Patient Name")
-dob = st.text_input("Date of Birth")
-gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+dob = st.date_input("Date of Birth")
+gender = st.selectbox("Gender",["Male","Female","Others"])
 aadhaar = st.text_input("Aadhaar Number")
 phone = st.text_input("Phone Number")
 address = st.text_area("Address")
-
+department = st.selectbox("Department",["Cardiology","Orthopedic","Neurology","General Medicine","Pediatrics"])
+visit_type = st.radio("Visit Type",["OPD","IPD"])
 if st.button("Register Patient"):
     st.success("Patient Registered Successfully")
-
-    st.write("### Patient Details")
-    st.write("Name:",name)
-    st.write("DOB:",dob)
-    st.write("Gender:",gender)
-    st.write("Aadhaar:",aadhaar)
-    st.write("Phone:",phone)
-    st.write("Address:",address)
+    st.write("##Registration Details")
+    st.write("Patient ID:",patient_id)
+    st.write("Name:", name)
+    st.write(DOB:", dob)
+    st.write("Gender:", gender)
+    st.write("Aadhaar:", aadhaar)
+    st.write("Phone:", phone)
+    st.write("Address:", address)
+    st.write("Department:", department)
+    st.write("Visit Type:", visit_type)
+    st.write("Registration Time:", datetime.now())
