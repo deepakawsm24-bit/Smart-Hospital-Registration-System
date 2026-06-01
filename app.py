@@ -22,7 +22,17 @@ visit_type = st.radio("Visit Type",["OPD","IPD"])
 if st.button("Register Patient"):
     existing_patient = cursor.execute("SELECT * FROM patients WHERE aadhaar =? or phone =?",(aadhaar, phone)).fetchone()
     if existing_patient:
-        st.error(f"Patient already registered with ID: {existing_patient[0]}")
+        st.warning("Patient Already Registered")
+        st.write("Patient ID:",existing_patient[0])
+        st.write("Name:", existing_patient[1])
+        st.write("DOB:", existing_patient[2])
+        st.write("Gender:", existing_patient[3])
+        st.write("Aadhaar:", existing_patient[4])
+        st.write("Phone:", existing_patient[5])
+        st.write("Address:", existing_patient[6])
+        st.write("Department:", existing_patient[7])
+        st.write("Visit Type:", existing_patient[8])
+        st.write("Registration Time:", existing_patient[9])
 else:
     cursor.execute("INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?)",(patient_id,str(name),str(dob),str(gender),str(aadhaar),str(phone),str(address),str(department),str(visit_type),str(datetime.now())))       
     conn.commit()                                                                        
