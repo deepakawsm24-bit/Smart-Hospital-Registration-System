@@ -18,7 +18,7 @@ if st.button("Register Patient"):
     st.write("##Registration Details")
     st.write("Patient ID:",patient_id)
     st.write("Name:", name)
-    st.write(DOB:", dob)
+    st.write("DOB:", dob)
     st.write("Gender:", gender)
     st.write("Aadhaar:", aadhaar)
     st.write("Phone:", phone)
