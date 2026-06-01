@@ -46,4 +46,4 @@ if st.button("Register Patient"):
             st.success("Patient Found")
             st.write(result)
         else:
-            st.error("Patient Not Found)
+            st.error("Patient Not Found")
