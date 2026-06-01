@@ -20,6 +20,10 @@ address = st.text_area("Address")
 department = st.selectbox("Department",["Cardiology","Orthopedic","Neurology","General Medicine","Pediatrics"])
 visit_type = st.radio("Visit Type",["OPD","IPD"])
 if st.button("Register Patient"):
+    existing_patient = cursor.execute("SELECT * FROM patients WHERE aadhaar =? or phone =?",(aadhaar, phone)).fetchone()
+    if existing_patient:
+        st.error(f"Patient already registered with ID: {existing_patient[0]}")
+    else:
     cursor.execute("INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?)",(patient_id,str(name),str(dob),str(gender),str(aadhaar),str(phone),str(address),str(department),str(visit_type),str(datetime.now())))       
     conn.commit()                                                                        
     st.success("Patient Registered Successfully")
@@ -41,7 +45,7 @@ if st.button("Register Patient"):
     st.subheader("Search Patient")
     search_id = st.text_input("Enter Patient ID")
     if st.button("Search Patient"):
-        result = cursor.execute("SELECT * FROM patients WHERE patient_id=?",(search_id)).fetchone()
+        result = cursor.execute("SELECT * FROM patients WHERE patient_id=?",(search_id,)).fetchone()
         if result:
             st.success("Patient Found")
             st.write(result)
