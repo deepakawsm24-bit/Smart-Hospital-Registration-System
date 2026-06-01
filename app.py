@@ -23,7 +23,7 @@ if st.button("Register Patient"):
     existing_patient = cursor.execute("SELECT * FROM patients WHERE aadhaar =? or phone =?",(aadhaar, phone)).fetchone()
     if existing_patient:
         st.error(f"Patient already registered with ID: {existing_patient[0]}")
-    else:
+else:
     cursor.execute("INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?)",(patient_id,str(name),str(dob),str(gender),str(aadhaar),str(phone),str(address),str(department),str(visit_type),str(datetime.now())))       
     conn.commit()                                                                        
     st.success("Patient Registered Successfully")
