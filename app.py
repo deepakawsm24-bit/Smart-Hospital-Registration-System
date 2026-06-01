@@ -1,6 +1,12 @@
 import streamlit as st
+import sqlite3
+import pandas as pd
 from datetime import datetime
 import random
+conn = sqlite3.connect("hospital.db",check_same_thread=False)
+cursor = conn.cursor()
+cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, phone TEXT, address TEXT, phone TEXT, department TEXT, visit_type TEXT, registration_time TEXT)""")
+conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
 patient_id = "PAT" + str(random.randint(1000,9999))
@@ -14,6 +20,20 @@ address = st.text_area("Address")
 department = st.selectbox("Department",["Cardiology","Orthopedic","Neurology","General Medicine","Pediatrics"])
 visit_type = st.radio("Visit Type",["OPD","IPD"])
 if st.button("Register Patient"):
+    cursor.execute(""" INSERT INTO patients VALUES
+(?,?,?,?,?,?,?,?,?,?,)
+    """, (
+        patient_id,
+        str(name),
+        str(dob),
+        str(gender),
+        str(aadhaar),
+        str(phone),
+        str(address),
+        str(department),
+        str(visit_type),
+        str(datetime.now()))       
+    conn.commit()                                                                        
     st.success("Patient Registered Successfully")
     st.write("##Registration Details")
     st.write("Patient ID:",patient_id)
