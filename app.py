@@ -17,6 +17,7 @@ gender = st.selectbox("Gender",["Male","Female","Others"])
 aadhaar = st.text_input("Aadhaar Number")
 phone = st.text_input("Phone Number")
 address = st.text_area("Address")
+payment_type = st.selectbox("Payment Type",["Cash","Insurance","Corporate","PSU","ECHS"])
 department = st.selectbox("Department",["Cardiology","Orthopedic","Neurology","General Medicine","Pediatrics"])
 visit_type = st.radio("Visit Type",["OPD","IPD"])
 if st.button("Register Patient"):
