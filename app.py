@@ -20,8 +20,8 @@ address = st.text_area("Address")
 department = st.selectbox("Department",["Cardiology","Orthopedic","Neurology","General Medicine","Pediatrics"])
 visit_type = st.radio("Visit Type",["OPD","IPD"])
 if st.button("Register Patient"):
-    cursor.execute(" INSERT INTO patients VALUES
-(?,?,?,?,?,?,?,?,?)",
+    cursor.execute( "INSERT INTO patients VALUES
+(?,?,?,?,?,?,?,?,?,?)",
     (
         patient_id,
         str(name),
