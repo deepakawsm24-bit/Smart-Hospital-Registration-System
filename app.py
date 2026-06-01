@@ -38,3 +38,12 @@ if st.button("Register Patient"):
     if st.button("View All Patients"):
         df = pd.read_sql_query("SELECT * FROM patients",conn)
         st.dataframe(df)
+    st.subheader("Search Patient")
+    search_id = st.text_input("Enter Patient ID")
+    if st.button("Search Patient"):
+        result = cursor.execute("SELECT * FROM patients WHERE patient_id=?",(search_id)).fetchone()
+        if result:
+            st.success("Patient Found")
+            st.write(result)
+        else:
+            st.error("Patient Not Found)
