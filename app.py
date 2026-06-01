@@ -34,3 +34,7 @@ if st.button("Register Patient"):
     st.write("Department:", department)
     st.write("Visit Type:", visit_type)
     st.write("Registration Time:", datetime.now())
+    st.subheader("All Patients Records")
+    if st.button("View All Patients"):
+        df = pd.read_sql_query("SELECT * FROM patients",conn)
+        st.dataframe(df)
