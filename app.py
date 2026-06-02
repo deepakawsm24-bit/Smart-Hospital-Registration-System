@@ -53,9 +53,9 @@ else:
        st.write("Visit Type:", visit_type)
        st.write("Registration Time:", datetime.now())
        st.subheader("All Patients Records")
-    if st.button("View All Patients"):
-        df = pd.read_sql_query("SELECT * FROM patients",conn)
-        st.dataframe(df)
+if  st.button("View All Patients"):
+    df = pd.read_sql_query("SELECT * FROM patients",conn)
+    st.dataframe(df)
     st.subheader("Search Patient")
     search_id = st.text_input("Enter Patient ID")
     if st.button("Search Patient"):
