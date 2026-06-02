@@ -5,7 +5,7 @@ from datetime import datetime
 import random
 conn = sqlite3.connect("hospital.db",check_same_thread=False)
 cursor = conn.cursor()
-cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, phone TEXT, department TEXT, visit_type TEXT, registration_time TEXT)""")
+cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT,payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, registration_time TEXT)""")
 conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
@@ -37,7 +37,7 @@ if st.button("Register Patient"):
         st.write("Visit Type:", existing_patient[8])
         st.write("Registration Time:", existing_patient[9])
 else:
-    cursor.execute("INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?)",(patient_id,str(name),str(dob),str(gender),str(aadhaar),str(phone),str(address),str(department),str(visit_type),str(datetime.now())))       
+    cursor.execute("INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?)",(patient_id,str(name),str(dob),str(gender),str(aadhaar),str(payment_type),str(phone),str(address),str(department),str(visit_type),str(datetime.now())))       
     conn.commit()                                                                        
     st.success("Patient Registered Successfully")
     st.write("##Registration Details")
