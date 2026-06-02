@@ -38,9 +38,7 @@ if st.button("Register Patient"):
         st.write("Visit Type:", existing_patient[9])
         st.write("Registration Time:", existing_patient[10])
 else:
-       cursor.execute(
-           "INSERT INTO patients
-       VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+       cursor.execute(" INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?,?)",
            (
                patient_id,
                str(name),
