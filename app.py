@@ -39,7 +39,7 @@ if st.button("Register Patient"):
         st.write("Registration Time:", existing_patient[10])
 else:
        cursor.execute("INSERT INTO Patients VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-           (patient_id ,str(name),str(dob),str(gender),str(aadhaar),str(address),str(payment_type),str(phone),str(department),str(visit_type),str(datetime.now())))       
+       (patient_id,str(name),str(dob),str(gender),str(aadhaar),str(address),str(payment_type),str(phone),str(department),str(visit_type),str(datetime.now())))       
        conn.commit()                                                                        
        st.success("Patient Registered Successfully")
        st.write("##Registration Details")
