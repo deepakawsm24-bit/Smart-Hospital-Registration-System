@@ -12,35 +12,59 @@ st.title("Smart Hospital Registration & Admission System")
 menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient"])
 if menu == "New Registration":
     patient_id = "PAT" + str(random.randint(1000,9999))
+
     st.subheader("Patient Registration Form")
+
     name = st.text_input("Patient Name")
     dob = st.date_input("Date of Birth")
     gender = st.selectbox("Gender",["Male","Female","Others"])
     aadhaar = st.text_input("Aadhaar Number")
     phone = st.text_input("Phone Number")
     address = st.text_area("Address")
-    payment_type = st.selectbox("Payment Type",["Cash","Insurance","Corporate","PSU","ECHS"])
-    department = st.selectbox("Department",["Cardiology","Orthopedic","Neurology","General Medicine","Pediatrics"])
+
+    payment_type = st.selectbox(
+        "Payment Type",
+        ["Cash","Insurance","Corporate","PSU","ECHS"]
+    )
+
+    department = st.selectbox(
+        "Department",
+        ["Cardiology","Orthopedic","Neurology",
+         "General Medicine","Pediatrics"]
+    )
+
     visit_type = st.radio("Visit Type",["OPD","IPD"])
-if st.button("Register Patient"):
-   existing_patient = cursor.execute("SELECT * FROM patients WHERE aadhaar =? or phone =?",(aadhaar, phone)).fetchone()
-    if existing_patient:
-        st.warning("Patient Already Registered")
-        st.write("Patient ID:",existing_patient[0])
-        st.write("Name:", existing_patient[1])
-        st.write("DOB:", existing_patient[2])
-        st.write("Gender:", existing_patient[3])
-        st.write("Aadhaar:", existing_patient[4])
-        st.write("Payment Type:", existing_patient[5])
-        st.write("Phone:", existing_patient[6])
-        st.write("Address:", existing_patient[7])
-        st.write("Department:", existing_patient[8])
-        st.write("Visit Type:", existing_patient[9])
-        st.write("Registration Time:", existing_patient[10])
- else:
-        cursor.execute("INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?,?)",(patient_id, str(name), str(dob), str(gender), str(aadhaar), str(address), str(payment_type), str(phone), str(department), str(visit_type), str(datetime.now())       
-        conn.commit()                                                                        
-        st.success("Patient Registered Successfully")
+
+    if st.button("Register Patient"):
+
+        existing_patient = cursor.execute(
+            "SELECT * FROM patients WHERE aadhaar=? OR phone=?",
+            (aadhaar, phone)
+        ).fetchone()
+
+        if existing_patient:
+            st.warning("Patient Already Registered")
+
+        else:
+            cursor.execute(
+                "INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    patient_id,
+                    str(name),
+                    str(dob),
+                    str(gender),
+                    str(aadhaar),
+                    str(address),
+                    str(payment_type),
+                    str(phone),
+                    str(department),
+                    str(visit_type),
+                    str(datetime.now())
+                )
+            )
+
+            conn.commit()
+            st.success("Patient Registered Successfully")
         st.write("##Registration Details")
         st.write("Patient ID:",patient_id)
         st.write("Name:", name)
