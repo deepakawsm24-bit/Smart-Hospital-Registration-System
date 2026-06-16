@@ -112,6 +112,11 @@ if menu == "New Registration":
 
             conn.commit()
             st.success("Patient Registered Successfully")
+            qr_data = f"Patient ID: {patient_id}\nName: {name}\nPhone:{phone}"
+            qr = qrcode.make(qr_data)
+            buffer = BytesIO()
+            qr.save(buffer, format="PNG")
+            st.image(buffer.getvalue(),caption="Patient QR Code")
         st.write("##Registration Details")
         st.write("Patient ID:",patient_id)
         st.write("Name:", name)
