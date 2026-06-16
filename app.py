@@ -9,7 +9,7 @@ cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEX
 conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
-menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient"])
+menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient"])
 
 if menu =="Dashboard":
     st.subheader("Hospital Dashboard")
@@ -117,3 +117,26 @@ if  st.button("View All Patients"):
             st.write(result)
         else:
             st.error("Patient Not Found")
+
+if menu == "Delete Patient":
+    st.subheader("Delete Patient")
+    delete_id = st.text_input("Enter Patient ID")
+    if st.button("Delete Patient"):
+        cursore.execute("DELETE FROM patients WHERE patient_id=?",(delete_id,))
+        conn.commit()
+        st.success("Patient Deleted Successfully")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
