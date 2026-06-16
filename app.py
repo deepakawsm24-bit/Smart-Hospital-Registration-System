@@ -10,6 +10,21 @@ conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
 menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant"])
+if menu == "AI Admission Assistant":
+    st.subheader("AI Admission Assistant")
+    symptoms = st.text_area("Enter Patient Symptoms")
+    if st.button("Analyze Symptoms"):
+        symptoms = symptoms.lower()
+        if "fever" in symptoms or "cough" in symptoms:
+            st.success("Recommended Department: General Medicine")
+        elif " chest pain" in symptoms:
+            st.success("Recommended Department: Cardiology")
+        elif "bone" in symptoms or "fracture" in symptoms:
+            st.success ("Recommended Department: Orthopedic")
+        elif "skin" in symptoms or "allergy" in symptoms:
+            st.success("Recommended Department: "Dermatology")
+        else: 
+            st.warning("Please Consult General Physician")
 
 if menu =="Dashboard":
     st.subheader("Hospital Dashboard")
