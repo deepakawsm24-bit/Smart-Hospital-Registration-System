@@ -134,44 +134,36 @@ if menu == "Delete Patient":
         st.success("Patient Deleted Successfully")
 
 if menu == "Update Patient":
+
     st.subheader("Update Patient")
 
-    update_id = st.text_input("Enter Patient ID", key="update_patient_id")
+    update_id = st.text_input("Enter Patient ID")
 
-    if st.button("Load Patient"):
+    if update_id:
 
         result = cursor.execute(
-            "SELECT * FROM patients WHERE patient_id = ?",
+            "SELECT * FROM patients WHERE patient_id=?",
             (update_id,)
         ).fetchone()
 
         if result:
 
-            new_name = st.text_input("Patient Name", result[1],key="update_name")
-            new_phone = st.text_input("Phone", result[8],key="update_phone")
+            new_name = st.text_input("Patient Name", result[1])
+            new_phone = st.text_input("Phone", result[8])
 
             if st.button("Save Changes"):
+
                 cursor.execute(
-                    "UPDATE patients SET name = ?, phone = ? WHERE patient_id = ?",
+                    "UPDATE patients SET name=?, phone=? WHERE patient_id=?",
                     (new_name, new_phone, update_id)
                 )
 
                 conn.commit()
+
                 st.success("Patient Updated Successfully")
 
         else:
             st.error("Patient ID not found")
-            cursor.execute(
-    "UPDATE patients SET name=?, phone=? WHERE patient_id=?",
-    (new_name, new_phone, update_id)
-)
-
-st.write("Rows Updated:", cursor.rowcount)
-
-conn.commit()
-
-
-
 
 
 
