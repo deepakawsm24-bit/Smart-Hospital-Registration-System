@@ -27,6 +27,10 @@ if menu =="Dashboard":
         st.subheader("Patient Distribution")
         chart_data = pd.DataFrame({"Category":["Male","Female"],"Count":[male_patients,female_patients]})
         st.bar_chart(chart_data.set_index("Category"))
+        st.markdown("_ _ _")
+        st.subheader("Recent Patients")
+        df = pd.read_sql_query("SELECT patient_id, name, gender FROM patients",conn)
+        st.dataframe(df)
         
 if menu == "New Registration":
     patient_id = "PAT" + str(random.randint(1000,9999))
