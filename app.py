@@ -23,6 +23,10 @@ if menu =="Dashboard":
         st.metric("Male Patients",male_patients)
     with col3:
         st.metric("Female Patients",female_patients)
+        st.markdown("_ _ _ ")
+            st.subheader("Patient Distribution")
+            chart_data = pd.DataFrame({"Category":["Male","Female"],"Count":[male_patients,female_patients]})
+        st.bar_chart(chart_data.set_index("Category"))
         
 if menu == "New Registration":
     patient_id = "PAT" + str(random.randint(1000,9999))
