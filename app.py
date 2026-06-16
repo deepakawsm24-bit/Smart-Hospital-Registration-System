@@ -23,6 +23,8 @@ if menu =="Dashboard":
         st.metric("Male Patients",male_patients)
     with col3:
         st.metric("Female Patients",female_patients)
+        today_patients = cursor.execute(""" SELECT COUNT(*) FROM patients WHERE date(registration_time)=date('now')""").fetchone()[0]
+        st.metric("Today's Registration",today_patients)
         st.markdown("_ _ _ ")
         st.subheader("Patient Distribution")
         chart_data = pd.DataFrame({"Category":["Male","Female"],"Count":[male_patients,female_patients]})
