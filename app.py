@@ -136,7 +136,7 @@ if menu == "Delete Patient":
 if menu == "Update Patient":
     st.subheader("Update Patient")
 
-    update_id = st.text_input("Enter Patient ID")
+    update_id = st.text_input("Enter Patient ID", key="update_patient_id")
 
     if st.button("Load Patient"):
 
@@ -147,8 +147,8 @@ if menu == "Update Patient":
 
         if result:
 
-            new_name = st.text_input("Patient Name", result[1])
-            new_phone = st.text_input("Phone", result[8])
+            new_name = st.text_input("Patient Name", result[1],key="update_name")
+            new_phone = st.text_input("Phone", result[7],key="update_phone")
 
             if st.button("Save Changes"):
                 cursor.execute(
