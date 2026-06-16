@@ -14,7 +14,6 @@ menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient"
 if menu =="Dashboard":
     st.subheader("Hospital Dashboard")
     total_patients = cursor.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
-    st.metric("Total Patients",total_patients)
     male_patients = cursor.execute("SELECT COUNT(*) FROM patients WHERE gender='Male'").fetchone()[0]
     female_patients = cursor.execute("SELECT COUNT(*) FROM patients WHERE gender ='Female'").fetchone()[0]
     col1, col2, col3 = st.columns(3)
