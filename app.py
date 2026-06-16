@@ -9,7 +9,7 @@ cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEX
 conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
-menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient"])
+menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant"])
 
 if menu =="Dashboard":
     st.subheader("Hospital Dashboard")
