@@ -15,6 +15,15 @@ if menu =="Dashboard":
     st.subheader("Hospital Dashboard")
     total_patients = cursor.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
     st.metric("Total Patients",total_patients)
+    female_patients = cursor.execute("SELECT COUNT(*) FROM patients WHERE gender ='Female'").fetchone()[0]
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Patients",total_patients)
+    with col2:
+        st.metric("Male Patients",male_patients)
+    with col3:
+        st.metric("Female Patients",female_patients)
+        
 if menu == "New Registration":
     patient_id = "PAT" + str(random.randint(1000,9999))
 
