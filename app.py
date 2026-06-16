@@ -22,7 +22,7 @@ if menu == "AI Admission Assistant":
         elif "bone" in symptoms or "fracture" in symptoms:
             st.success ("Recommended Department: Orthopedic")
         elif "skin" in symptoms or "allergy" in symptoms:
-            st.success("Recommended Department: "Dermatology")
+            st.success("Recommended Department: Dermatology")
         else: 
             st.warning("Please Consult General Physician")
 
