@@ -148,7 +148,7 @@ if menu == "Update Patient":
         if result:
 
             new_name = st.text_input("Patient Name", result[1],key="update_name")
-            new_phone = st.text_input("Phone", result[7],key="update_phone")
+            new_phone = st.text_input("Phone", result[8],key="update_phone")
 
             if st.button("Save Changes"):
                 cursor.execute(
