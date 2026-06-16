@@ -10,6 +10,9 @@ conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
 menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient"])
+if menu =="Dashboard": st.subheader("Hospital Dashboard")
+    total_patients = cursor.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
+st.metric("Total Patients", total_patients)
 if menu == "New Registration":
     patient_id = "PAT" + str(random.randint(1000,9999))
 
