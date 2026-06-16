@@ -122,9 +122,9 @@ if menu == "Delete Patient":
     st.subheader("Delete Patient")
     delete_id = st.text_input("Enter Patient ID")
     if st.button("Delete Patient"):
-        cursore.execute("DELETE FROM patients WHERE patient_id=?",(delete_id,))
-        conn.commit()
-        st.success("Patient Deleted Successfully")
+    cursore.execute("DELETE FROM patients WHERE patient_id=?",(delete_id,))
+    conn.commit()
+    st.success("Patient Deleted Successfully")
 
 
 
