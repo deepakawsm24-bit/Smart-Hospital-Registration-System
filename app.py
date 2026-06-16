@@ -3,6 +3,9 @@ import sqlite3
 import pandas as pd
 from datetime import datetime
 import random
+import qrcode
+from PIL import Image
+from io import BytesIO
 conn = sqlite3.connect("hospital.db",check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, registration_time TEXT)""")
