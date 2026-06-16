@@ -124,6 +124,8 @@ if menu == "New Registration":
 if  st.button("View All Patients"):
     df = pd.read_sql_query("SELECT * FROM patients",conn)
     st.dataframe(df)
+    excel = df.to_csv(index=False).encode('utf-8')
+    st.download_button(label="Download Patient Records", data=excel,file_name="Patients.csv",mime="text/csv")
     st.subheader("Search Patient")
     search_id = st.text_input("Enter Patient ID")
     if st.button("Search Patient"):
