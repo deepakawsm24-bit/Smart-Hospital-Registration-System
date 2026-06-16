@@ -161,6 +161,14 @@ if menu == "Update Patient":
 
         else:
             st.error("Patient ID not found")
+            cursor.execute(
+    "UPDATE patients SET name=?, phone=? WHERE patient_id=?",
+    (new_name, new_phone, update_id)
+)
+
+st.write("Rows Updated:", cursor.rowcount)
+
+conn.commit()
 
 
 
