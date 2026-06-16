@@ -137,13 +137,13 @@ if menu == "Update Patient":
     st.subheader("Update Patient")
     update_id = st.text_input("Enter Patient ID")
     if st.button("Load Patient"):
-        result = cursor.execute("SELECT * FROM patients WHERE patient_id=?",(update_id,)).fetchone()
+       result = cursor.execute("SELECT * FROM patients WHERE patient_id=?",(update_id,)).fetchone()
         if result: new_name = st.text_input("Patinet Name", result[1])
-            new_phone = st.text_input("Phone",result[8])
+           new_phone = st.text_input("Phone",result[8])
         if st.button("Save Changes"):
-            cursor.execute(UPDATE patients SET name=?, phone=? WHERE patient_id=?",(new_name, new_phone, update_id))
-            conn.commit()
-            st.success("Patient Updated Successfully")
+           cursor.execute(UPDATE patients SET name=?, phone=? WHERE patient_id=?",(new_name, new_phone, update_id))
+           conn.commit()
+           st.success("Patient Updated Successfully")
             
 
 
