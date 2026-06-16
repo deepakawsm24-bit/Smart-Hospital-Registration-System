@@ -24,7 +24,7 @@ if menu =="Dashboard":
     with col3:
         st.metric("Female Patients",female_patients)
         st.markdown("_ _ _ ")
-            st.subheader("Patient Distribution")
+        st.subheader("Patient Distribution")
             chart_data = pd.DataFrame({"Category":["Male","Female"],"Count":[male_patients,female_patients]})
         st.bar_chart(chart_data.set_index("Category"))
         
