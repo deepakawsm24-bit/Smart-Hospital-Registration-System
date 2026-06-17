@@ -12,7 +12,7 @@ cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEX
 conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
-menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant","Document Center"])
+menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant","Document Center","Document History"])
 if menu == "AI Admission Assistant":
     st.subheader("AI Admission Assistant")
     symptoms = st.text_area("Enter Patient Symptoms")
@@ -166,11 +166,28 @@ if menu == "Document Center":
     patient_id = st.text_input("Enter Patient ID")
     uploaded_file = st.file_uploader("Upload Aadhaar / Insurance / Lab Report", type = ["pdf", "png", "jpg", "jpeg"])
     if uploaded_file is not None:
-        with open(uploaded_file.name,"wb") as f:
+        with open(f"documents/{patient_id}_{uploaded_file.name}","wb") as f:
             f.write(uploaded_file.getbuffer())
         st.success("Document Uploaded Successfully")
         st.write("Patient ID:", patient_id)
         st.write("File Name:", uploaded_file.name)
+
+if menu == "Document History":
+    st.subheader("Patient Document History")
+    patient_id = st.text_input("Enter Patient ID")
+    if st.button("Show Documents"):
+        try:
+            import os
+            files = os.listdir("documents")
+            patient_files = [f for f in files if patient_id in f]
+            if patient_files:
+                st.success("Documents Found")
+                for file in patient_files:
+                    st.write(file)
+            else:
+                st.warning("No Documents Found")
+                except:
+                    st.error("Documents Folder Not Found")
                                      
 if menu == "Update Patient":
 
