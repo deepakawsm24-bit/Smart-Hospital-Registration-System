@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 import sqlite3
 import pandas as pd
 from datetime import datetime, date
@@ -166,6 +167,8 @@ if menu == "Document Center":
     patient_id = st.text_input("Enter Patient ID")
     uploaded_file = st.file_uploader("Upload Aadhaar / Insurance / Lab Report", type = ["pdf", "png", "jpg", "jpeg"])
     if uploaded_file is not None:
+        if not os.path.exists("documents"):
+            os.makedirs("documents")
         with open(f"documents/{patient_id}_{uploaded_file.name}","wb") as f:
             f.write(uploaded_file.getbuffer())
         st.success("Document Uploaded Successfully")
