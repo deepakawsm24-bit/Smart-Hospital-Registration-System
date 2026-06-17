@@ -183,7 +183,6 @@ if menu == "Document History":
     if st.button("Show Documents"):
         try:
             import os
-
             files = os.listdir("documents")
             patient_files = [f for f in files if patient_id in f]
 
@@ -192,15 +191,14 @@ if menu == "Document History":
                 for file in patient_files:
                     st.write(file)
                     file_path = f"documents/{file}" 
-                    if filej.endswith((".png",".jpg",".jpeg")):
+                    if file.endswith((".png",".jpg",".jpeg")):
                         st.image(file_path, width=300)
-                        with open(file_path,"rb")as f:
+                        with open(file_path,"rb") as f:
                             st.download_button(label=f"Download{file}",data=f,file_name=file)
-                            st.error(f"Error:{e}")
-            
-
-        except:
-            st.error("Documents Folder Not Found")
+         else:
+           st.warning("No Documents Found")
+except Exception as e:
+            st.error(f"Error:{e}")
                                      
 if menu == "Update Patient":
 
