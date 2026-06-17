@@ -195,8 +195,8 @@ if menu == "Document History":
                         st.image(file_path, width=300)
                         with open(file_path,"rb") as f:
                             st.download_button(label=f"Download{file}",data=f,file_name=file)
-         else:
-           st.warning("No Documents Found")
+            else:
+                 st.warning("No Documents Found")
 except Exception as e:
             st.error(f"Error:{e}")
                                      
