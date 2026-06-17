@@ -1,7 +1,7 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 import random
 import qrcode
 from PIL import Image
@@ -65,7 +65,7 @@ if menu == "New Registration":
     st.subheader("Patient Registration Form")
 
     name = st.text_input("Patient Name")
-    dob = st.date_input("Date of Birth")
+    dob = st.date_input("Date of Birth", min_value=date(1940,1,1),max_value=date.today())
     gender = st.selectbox("Gender",["Male","Female","Others"])
     aadhaar = st.text_input("Aadhaar Number")
     phone = st.text_input("Phone Number")
