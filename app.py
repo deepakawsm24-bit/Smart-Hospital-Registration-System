@@ -186,7 +186,7 @@ if menu == "Document History":
                     st.write(file)
             else:
                 st.warning("No Documents Found")
-            except:
+             except:
                 st.error("Documents Folder Not Found")
                                      
 if menu == "Update Patient":
