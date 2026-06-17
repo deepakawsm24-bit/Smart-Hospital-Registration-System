@@ -203,6 +203,13 @@ if menu == "Document History":
                                 label=f"Download {file}",
                                 data=f.read(),
                                 file_name=file
+                            )
+
+            else:
+                st.warning("No Documents Found")
+
+        except Exception as e:
+            st.error(f"Error: {e}")
                                      
 if menu == "Update Patient":
 
