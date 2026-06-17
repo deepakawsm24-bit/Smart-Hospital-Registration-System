@@ -191,6 +191,11 @@ if menu == "Document History":
                 st.success("Documents Found")
                 for file in patient_files:
                     st.write(file)
+                    file_path = f"documents/{file}" 
+                    if filej.endswith((".png",".jpg",".jpeg")):
+                        st.image(file_path, width=300)
+                        with open(file_path,"rb")as f:
+                            st.download_button(label=f"Download{file}",data=f,file_name=file)
             else:
                 st.warning("No Documents Found")
 
