@@ -174,20 +174,25 @@ if menu == "Document Center":
 
 if menu == "Document History":
     st.subheader("Patient Document History")
+
     patient_id = st.text_input("Enter Patient ID")
+
     if st.button("Show Documents"):
         try:
             import os
+
             files = os.listdir("documents")
             patient_files = [f for f in files if patient_id in f]
+
             if patient_files:
                 st.success("Documents Found")
                 for file in patient_files:
                     st.write(file)
             else:
                 st.warning("No Documents Found")
-             except:
-                st.error("Documents Folder Not Found")
+
+        except:
+            st.error("Documents Folder Not Found")
                                      
 if menu == "Update Patient":
 
