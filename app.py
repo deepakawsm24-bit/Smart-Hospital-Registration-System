@@ -196,6 +196,7 @@ if menu == "Document History":
                         st.image(file_path, width=300)
                         with open(file_path,"rb")as f:
                             st.download_button(label=f"Download{file}",data=f,file_name=file)
+                            st.error(f"Error:{e}")
             
 
         except:
