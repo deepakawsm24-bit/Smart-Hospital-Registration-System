@@ -166,6 +166,8 @@ if menu == "Document Center":
     patient_id = st.text_input("Enter Patient ID")
     uploaded_file = st.file_uploader("Upload Aadhaar / Insurance / Lab Report", type = ["pdf", "png", "jpg", "jpeg"])
     if uploaded_file is not None:
+        with open(uploaded_file.name,"wb") as f:
+            f.write(uploaded_file.getbuffer())
         st.success("Document Uploaded Successfully")
         st.write("Patient ID:", patient_id)
         st.write("File Name:", uploaded_file.name)
