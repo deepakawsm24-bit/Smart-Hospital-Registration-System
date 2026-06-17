@@ -12,7 +12,7 @@ cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEX
 conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
-menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant"])
+menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant","Document Center"])
 if menu == "AI Admission Assistant":
     st.subheader("AI Admission Assistant")
     symptoms = st.text_area("Enter Patient Symptoms")
@@ -161,6 +161,15 @@ if menu == "Delete Patient":
 
         st.success("Patient Deleted Successfully")
 
+if menu == "Document Center":
+    st.subheader("Patient Document Upload")
+    patient_id = st.text_input("Enter Patient ID")
+    uploaded_file = st.file_uploader("Upload Aadhaar / Insurance / Lab Report", type = ["pdf", "png", "jpg", "jpeg"])
+    if uploaded_file is not None:
+        st.success("Document Uploaded Successfully")
+        st.write("Patient ID:", patient_id)
+        st.write("File Name:", uploaded_file.name)
+                                     
 if menu == "Update Patient":
 
     st.subheader("Update Patient")
