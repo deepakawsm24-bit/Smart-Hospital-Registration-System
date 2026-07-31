@@ -115,13 +115,11 @@ if menu == "New Registration":
                 )
             )
             if photo is not None:
-    if not os.path.exists("documents/photos"):
-        os.makedirs("documents/photos")
-
-    photo_path = f"documents/photos/{patient_id}_{photo.name}"
-
-    with open(photo_path, "wb") as f:
-        f.write(photo.getbuffer())
+                if not os.path.exists("documents/photos"):
+                    os.makedirs("documents/photos")
+                photo_path = f"documents/photos/{patient_id}_{photo.name}"
+                with open(photo_path, "wb") as f:
+                    f.write(photo.getbuffer())
             conn.commit()
             st.success("Patient Registered Successfully")
             qr_data = f"Patient ID: {patient_id}\nName: {name}\nPhone:{phone}"
