@@ -115,11 +115,11 @@ if menu == "New Registration":
                 )
             )
             if photo is not None:
-               if not 
+                if not 
                 os.path.exists("documents/photos"):
                      os.makedirs("documents/photos")
                  photo_path = f"documents/photos/{patient_id}_{photo.name}"
-                 with open(photo_path,"wb")
+                with open(photo_path,"wb")
             as f:
             f.write(photo.getbuffer())
             conn.commit()
