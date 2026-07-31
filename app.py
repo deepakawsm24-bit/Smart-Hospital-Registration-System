@@ -7,6 +7,7 @@ import random
 import qrcode
 from PIL import Image
 from io import BytesIO
+import shutil
 conn = sqlite3.connect("hospital.db",check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, registration_time TEXT)""")
@@ -84,9 +85,10 @@ if menu == "New Registration":
     )
 
     visit_type = st.radio("Visit Type",["OPD","IPD"])
+    photo = st.file_uploader("Upload Patient Photo",
+                             type = ["jpg","jpeg","png"])
 
     if st.button("Register Patient"):
-
         existing_patient = cursor.execute(
             "SELECT * FROM patients WHERE aadhaar=? OR phone=?",
             (aadhaar, phone)
@@ -112,7 +114,14 @@ if menu == "New Registration":
                     str(datetime.now())
                 )
             )
-
+             if photo is not None:
+            if not 
+            os.path.exists("documents/photos"):
+                os.makedirs("documents/photos")
+                photo_path = f"documents/photos/{patient_id}_{photo.name}"
+                with open(photo_path,"wb")
+                as f:
+                    f.write(photo.getbuffer())
             conn.commit()
             st.success("Patient Registered Successfully")
             qr_data = f"Patient ID: {patient_id}\nName: {name}\nPhone:{phone}"
