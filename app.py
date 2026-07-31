@@ -93,6 +93,14 @@ if menu == "New Registration":
 
     visit_type = st.radio("Visit Type",["OPD","IPD"])
     if st.button("Register Patient"):
+        photo_path = ""
+
+        if photo is not None:
+            if not os.path.exists("documents/photos"):
+                os.makedirs("documents/photos")
+        photo_path = f"documents/photos/{patient_id}_{photo.name}"
+        with open(photo_path, "wb") as f:
+            f.write(photo.getbuffer())
         existing_patient = cursor.execute(
             "SELECT * FROM patients WHERE aadhaar=? OR phone=?",
             (aadhaar, phone)
