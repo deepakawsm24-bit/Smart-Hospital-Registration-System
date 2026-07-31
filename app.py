@@ -78,6 +78,8 @@ if menu == "New Registration":
     phone = st.text_input("Phone Number")
     address = st.text_area("Address")
     photo = st.file_uploader("Upload Patient Photo",type = ["jpg","jpeg","png"])
+    if photo is not None:
+        st.image(photo,caption="Patient Photo",width=200)
     payment_type = st.selectbox(
         "Payment Type",
         ["Cash","Insurance","Corporate","PSU","ECHS"]
@@ -92,6 +94,7 @@ if menu == "New Registration":
     visit_type = st.radio("Visit Type",["OPD","IPD"])
     photo = st.file_uploader("Upload Patient Photo",
                              type = ["jpg","jpeg","png"])
+    
 
     if st.button("Register Patient"):
         existing_patient = cursor.execute(
