@@ -1,4 +1,5 @@
 streamlit
 qrcode
 Pillow
-supabase
+supabase>=2.4.0
+pillow
