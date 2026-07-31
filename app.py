@@ -114,9 +114,9 @@ if menu == "New Registration":
                     str(datetime.now())
                 )
             )
-             if photo is not None:
-                 if not 
-             os.path.exists("documents/photos"):
+               if photo is not None:
+                   if not 
+                os.path.exists("documents/photos"):
                      os.makedirs("documents/photos")
                  photo_path = f"documents/photos/{patient_id}_{photo.name}"
                  with open(photo_path,"wb")
