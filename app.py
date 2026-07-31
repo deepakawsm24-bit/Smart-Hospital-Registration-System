@@ -77,7 +77,7 @@ if menu == "New Registration":
     aadhaar = st.text_input("Aadhaar Number")
     phone = st.text_input("Phone Number")
     address = st.text_area("Address")
-
+    photo = st.file_uploader("Upload Patient Photo",type = ["jpg","jpeg","png"])
     payment_type = st.selectbox(
         "Payment Type",
         ["Cash","Insurance","Corporate","PSU","ECHS"]
