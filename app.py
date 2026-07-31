@@ -10,7 +10,7 @@ from io import BytesIO
 import shutil
 conn = sqlite3.connect("hospital.db",check_same_thread=False)
 cursor = conn.cursor()
-cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, registration_time TEXT)""")
+cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, photo_path TEXT, registration_time TEXT)""")
 conn.commit()
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
@@ -111,7 +111,7 @@ if menu == "New Registration":
 
         else:
             cursor.execute(
-                "INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     patient_id,
                     str(name),
@@ -123,6 +123,7 @@ if menu == "New Registration":
                     str(phone),
                     str(department),
                     str(visit_type),
+                    photo_path,
                     str(datetime.now())
                 )
             )
