@@ -7,7 +7,7 @@ import random
 import qrcode
 from PIL import Image
 from io import BytesIO
-import shutil
+import 
 conn = sqlite3.connect("hospital.db",check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, photo_path TEXT, registration_time TEXT)""")
