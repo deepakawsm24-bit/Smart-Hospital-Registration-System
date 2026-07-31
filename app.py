@@ -63,8 +63,8 @@ if menu =="Dashboard":
             )
             st.subheader("Department Wise Patients")
             st.bar_chart(dept_df.set_index("Department"))
-       else:
-           st.info("No department data available")
+        else:
+            st.info("No department data available")
 if menu == "New Registration":
     patient_id = "PAT" + str(random.randint(1000,9999))
     st.write("Patient ID:", patient_id)
