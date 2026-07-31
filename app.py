@@ -53,19 +53,19 @@ if menu =="Dashboard":
         st.subheader("Recent Patients")
         df = pd.read_sql_query("SELECT patient_id, name, gender FROM patients",conn)
         st.dataframe(df)
-       department_count = cursor.execute("""
-SELECT department, COUNT(*) FROM patients GROUP BY department
-""").fetchall()
+        department_count = cursor.execute("""
+        SELECT department, COUNT(*) FROM patients GROUP BY department
+        """).fetchall()
 
-if department_count:
-    dept_df = pd.DataFrame(
-        department_count,
-        columns=["Department", "Patients"]
-    )
-    st.subheader("Department Wise Patients")
-    st.bar_chart(dept_df.set_index("Department"))
-else:
-    st.info("No department data available")
+       if department_count:
+           dept_df = pd.DataFrame(
+               department_count,
+               columns=["Department", "Patients"]
+           )
+           st.subheader("Department Wise Patients")
+           st.bar_chart(dept_df.set_index("Department"))
+      else:
+          st.info("No department data available")
 if menu == "New Registration":
     patient_id = "PAT" + str(random.randint(1000,9999))
     st.write("Patient ID:", patient_id)
