@@ -7,14 +7,10 @@ import random
 import qrcode
 from PIL import Image
 from io import BytesIO
-from supabase import Create_client, Client
 conn = sqlite3.connect("hospital.db",check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, registration_time TEXT)""")
 conn.commit()
-url = "YOUR_SUPABASE_URL"
-key = "YOUR_SUPABASE_ANON_KEY"
-supabase: Client = create_client(url,key)
 st.set_page_config(page_title="Smart Hospital Registration System", layout ="wide")
 st.title("Smart Hospital Registration & Admission System")
 menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant","Document Center","Document History"])
