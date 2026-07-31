@@ -92,10 +92,6 @@ if menu == "New Registration":
     )
 
     visit_type = st.radio("Visit Type",["OPD","IPD"])
-    photo = st.file_uploader("Upload Patient Photo",
-                             type = ["jpg","jpeg","png"])
-    
-
     if st.button("Register Patient"):
         existing_patient = cursor.execute(
             "SELECT * FROM patients WHERE aadhaar=? OR phone=?",
