@@ -97,7 +97,8 @@ if menu == "New Registration":
         if photo is not None:
             if not os.path.exists("documents/photos"):
                 os.makedirs("documents/photos")
-        photo_path = f"documents/photos/{patient_id}_{photo.name}"
+photo_name = getattr(photo, "name", "patient_photo.jpg")
+photo_path = f"documents/photos/{patient_id}_{photo_name}"
         with open(photo_path, "wb") as f:
             f.write(photo.getbuffer())
         existing_patient = cursor.execute(
