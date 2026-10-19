@@ -1,214 +1,395 @@
+
 import streamlit as st
-import os
-import sqlite3
 import pandas as pd
-from datetime import datetime, date
-import random
 import qrcode
-from PIL import Image
 from io import BytesIO
-conn = sqlite3.connect("hospital.db",check_same_thread=False)
-cursor = conn.cursor()
-cursor.execute(""" CREATE TABLE IF NOT EXISTS patients(patient_id TEXT, name TEXT, dob TEXT, gender TEXT, aadhaar TEXT, address TEXT, payment_type TEXT, phone TEXT, department TEXT, visit_type TEXT, photo_path TEXT, registration_time TEXT)""")
-conn.commit()
-st.set_page_config(page_title="Smart Hospital Information System", layout ="wide")
+from datetime import date, datetime
+from supabase import create_client
+
+st.set_page_config(
+    page_title="Smart Hospital Information System",
+    layout="wide"
+)
+
+# ---------- SUPABASE CONNECTION ----------
+@st.cache_resource
+def get_supabase():
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
 st.title("Smart Hospital Information System")
-menu = st.radio("Select Option",["Dashboard","New Registration","Search Patient","View ALL Patients","Update Patient","Delete Patient","AI Admission Assistant","Document Center","Document History"])
-if menu == "AI Admission Assistant":
-    st.subheader("AI Admission Assistant")
-    symptoms = st.text_area("Enter Patient Symptoms")
-    if st.button("Analyze Symptoms"):
-        symptoms = symptoms.lower()
-        if "fever" in symptoms or "cough" in symptoms:
-            st.success("Recommended Department: General Medicine")
-        elif " chest pain" in symptoms:
-            st.success("Recommended Department: Cardiology")
-        elif "bone" in symptoms or "fracture" in symptoms:
-            st.success ("Recommended Department: Orthopedic")
-        elif "skin" in symptoms or "allergy" in symptoms:
-            st.success("Recommended Department: Dermatology")
-        else: 
-            st.warning("Please Consult General Physician")
 
-if menu =="Dashboard":
+try:
+    supabase = get_supabase()
+    # Verify that the table exists and is accessible.
+    supabase.table("patients").select("patient_id").limit(1).execute()
+except Exception as e:
+    st.error("Supabase connection failed. Check your secrets and table name.")
+    st.caption(str(e))
+    st.stop()
+
+TABLE = "patients"
+
+MENU = [
+    "Dashboard",
+    "New Registration",
+    "Search Patient",
+    "View All Patients",
+    "Update Patient",
+    "Delete Patient",
+    "AI Admission Assistant",
+    "Document Center",
+    "Document History"
+]
+
+menu = st.sidebar.radio("Select Option", MENU)
+
+
+# ---------- HELPERS ----------
+def get_patients():
+    result = supabase.table(TABLE).select("*").execute()
+    return result.data or []
+
+
+def find_patient(patient_id):
+    result = (
+        supabase.table(TABLE)
+        .select("*")
+        .eq("patient_id", patient_id)
+        .limit(1)
+        .execute()
+    )
+    return result.data[0] if result.data else None
+
+
+def upload_document(patient_id, uploaded_file):
+    # Requires a private Supabase Storage bucket named patient-documents.
+    safe_name = uploaded_file.name.replace("/", "_").replace("\\", "_")
+    path = f"{patient_id}/{datetime.now().strftime('%Y%m%d%H%M%S')}_{safe_name}"
+
+    supabase.storage.from_("patient-documents").upload(
+        path,
+        uploaded_file.getvalue(),
+        {"content-type": uploaded_file.type or "application/octet-stream"}
+    )
+    return path
+
+
+# ---------- DASHBOARD ----------
+if menu == "Dashboard":
     st.subheader("Hospital Dashboard")
-    total_patients = cursor.execute("SELECT COUNT(*) FROM patients").fetchone()[0]
-    male_patients = cursor.execute("SELECT COUNT(*) FROM patients WHERE gender='Male'").fetchone()[0]
-    female_patients = cursor.execute("SELECT COUNT(*) FROM patients WHERE gender ='Female'").fetchone()[0]
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Total Patients",total_patients)
-    with col2:
-        st.metric("Male Patients",male_patients)
-    with col3:
-        st.metric("Female Patients",female_patients)
-        today_patients = cursor.execute(""" SELECT COUNT(*) FROM patients WHERE date(registration_time)=date('now')""").fetchone()[0]
-        st.metric("Today's Registration",today_patients)
-        st.markdown("_ _ _ ")
-        st.subheader("Patient Distribution")
-        chart_data = pd.DataFrame({"Category":["Male","Female"],"Count":[male_patients,female_patients]})
-        st.bar_chart(chart_data.set_index("Category"))
-        st.markdown("_ _ _")
-        st.subheader("Recent Patients")
-        df = pd.read_sql_query("SELECT patient_id, name, gender FROM patients",conn)
-        st.dataframe(df)
-        department_count = cursor.execute("""
-        SELECT department, COUNT(*) FROM patients GROUP BY department
-        """).fetchall()
-        if department_count:
-            dept_df = pd.DataFrame(
-                department_count,
-                columns=["Department", "Patients"]
-            )
-            st.subheader("Department Wise Patients")
-            st.bar_chart(dept_df.set_index("Department"))
-        else:
-            st.info("No department data available")
-if menu == "New Registration":
-    patient_id = "PAT" + str(random.randint(1000,9999))
-    st.write("Patient ID:", patient_id)
 
+    try:
+        patients = get_patients()
+        df = pd.DataFrame(patients)
+
+        if df.empty:
+            st.info("No patient records found.")
+        else:
+            total = len(df)
+            male = int((df["gender"] == "Male").sum()) if "gender" in df else 0
+            female = int((df["gender"] == "Female").sum()) if "gender" in df else 0
+
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Total Patients", total)
+            c2.metric("Male Patients", male)
+            c3.metric("Female Patients", female)
+
+            st.subheader("Recent Patients")
+            st.dataframe(df.tail(10), use_container_width=True)
+
+            if "department" in df:
+                st.subheader("Department-wise Patients")
+                st.bar_chart(df["department"].value_counts())
+
+    except Exception as e:
+        st.error(f"Dashboard error: {e}")
+
+
+# ---------- NEW REGISTRATION ----------
+elif menu == "New Registration":
     st.subheader("Patient Registration Form")
 
-    name = st.text_input("Patient Name")
-    dob = st.date_input("Date of Birth", min_value=date(1940,1,1),max_value=date.today())
-    gender = st.selectbox("Gender",["Male","Female","Others"])
-    aadhaar = st.text_input("Aadhaar Number")
-    phone = st.text_input("Phone Number")
-    address = st.text_area("Address")
-    photo = st.file_uploader("Upload Patient Photo",type = ["jpg","jpeg","png"])
-    if photo is not None:
-        st.image(photo,caption="Patient Photo",width=200)
-    payment_type = st.selectbox(
-        "Payment Type",
-        ["Cash","Insurance","Corporate","PSU","ECHS"]
-    )
+    with st.form("registration_form"):
+        name = st.text_input("Patient Name")
+        dob = st.date_input(
+            "Date of Birth",
+            min_value=date(1940, 1, 1),
+            max_value=date.today()
+        )
+        gender = st.selectbox("Gender", ["Male", "Female", "Others"])
+        aadhaar = st.text_input("Aadhaar Number")
+        phone = st.text_input("Phone Number")
+        address = st.text_area("Address")
 
-    department = st.selectbox(
-        "Department",
-        ["Cardiology","Orthopedic","Neurology",
-         "General Medicine","Pediatrics"]
-    )
+        payment_type = st.selectbox(
+            "Payment Type",
+            ["Cash", "Insurance", "Corporate", "PSU", "ECHS"]
+        )
+        department = st.selectbox(
+            "Department",
+            [
+                "Cardiology", "Orthopedic", "Neurology",
+                "General Medicine", "Pediatrics"
+            ]
+        )
+        visit_type = st.radio("Visit Type", ["OPD", "IPD"])
 
-    visit_type = st.radio("Visit Type",["OPD","IPD"])
-if st.button("Register Patient"):
-   if not name.strip() or not phone.strip():
-            st.error("Patient name and phone are required.")
-      else:
-            existing_patient = cursor.execute(
-                "SELECT * FROM patients WHERE phone=?",
-                (phone.strip(),)
-            ).fetchone()
+        photo = st.file_uploader(
+            "Upload Patient Photo",
+            type=["jpg", "jpeg", "png"]
+        )
 
-            if existing_patient:
-                st.warning("Patient already registered.")
-            else:
-                photo_path = ""
+        submitted = st.form_submit_button("Register Patient")
 
-                if photo is not None:
-                    os.makedirs("documents/photos", exist_ok=True)
-                    photo_name = os.path.basename(photo.name)
-                    photo_path = (
-                        f"documents/photos/{patient_id}_{photo_name}"
-                    )
-                    with open(photo_path, "wb") as f:
-                        f.write(photo.getbuffer())
-
-                cursor.execute(
-                    """INSERT INTO patients VALUES
-                    (?,?,?,?,?,?,?,?,?,?,?,?)""",
-                    (
-                        patient_id, name.strip(), str(dob),
-                        gender, aadhaar.strip(), address,
-                        payment_type, phone.strip(), department,
-                        visit_type, photo_path, str(datetime.now())
-                    )
+    if submitted:
+        if not name.strip() or not phone.strip():
+            st.error("Patient name and phone number are required.")
+        else:
+            try:
+                existing = (
+                    supabase.table(TABLE)
+                    .select("patient_id")
+                    .eq("phone", phone.strip())
+                    .limit(1)
+                    .execute()
                 )
-                conn.commit()
-                st.success(f"Patient registered: {patient_id}")
 
-                qr_data = f"Patient ID: {patient_id}\nName: {name}"
-                qr = qrcode.make(qr_data)
-                buffer = BytesIO()
-                qr.save(buffer, format="PNG")
-                st.image(buffer.getvalue(), caption="Patient QR Code")
-       
-     
+                if existing.data:
+                    st.warning("This phone number is already registered.")
+                else:
+                    patient_id = (
+                        "PAT-" + datetime.now().strftime("%Y%m%d%H%M%S%f")
+                    )
+
+                    photo_path = None
+                    if photo is not None:
+                        photo_path = upload_document(patient_id, photo)
+
+                    record = {
+                        "patient_id": patient_id,
+                        "name": name.strip(),
+                        "dob": str(dob),
+                        "gender": gender,
+                        "aadhaar": aadhaar.strip() or None,
+                        "address": address.strip(),
+                        "payment_type": payment_type,
+                        "phone": phone.strip(),
+                        "department": department,
+                        "visit_type": visit_type,
+                        "photo_path": photo_path,
+                        "registration_time": datetime.now().astimezone().isoformat()
+                    }
+
+                    supabase.table(TABLE).insert(record).execute()
+
+                    st.success(f"Patient registered successfully: {patient_id}")
+
+                    qr = qrcode.make(
+                        f"Patient ID: {patient_id}\nName: {name}"
+                    )
+                    buffer = BytesIO()
+                    qr.save(buffer, format="PNG")
+                    st.image(buffer.getvalue(), caption="Patient QR Code")
+
+            except Exception as e:
+                st.error("Registration failed. Check the table columns and Storage setup.")
+                st.caption(str(e))
 
 
+# ---------- SEARCH PATIENT ----------
+elif menu == "Search Patient":
+    st.subheader("Search Patient")
+    search_id = st.text_input("Enter Patient ID")
 
-  
-            
+    if st.button("Search"):
+        if search_id.strip():
+            try:
+                patient = find_patient(search_id.strip())
+                if patient:
+                    st.success("Patient Found")
+                    st.json(patient)
+                else:
+                    st.warning("Patient not found.")
+            except Exception as e:
+                st.error(f"Search failed: {e}")
 
-                    file_path = f"documents/{file}"
 
-                    if file.endswith((".png", ".jpg", ".jpeg")):
-                        st.image(file_path, width=300)
+# ---------- VIEW ALL PATIENTS ----------
+elif menu == "View All Patients":
+    st.subheader("All Patient Records")
 
-                        with open(file_path, "rb") as f:
-                            st.download_button(
-                                label=f"Download {file}",
-                                data=f.read(),
-                                file_name=file
-                            )
+    try:
+        patients = get_patients()
+        df = pd.DataFrame(patients)
 
-            else:
-                st.warning("No Documents Found")
+        if df.empty:
+            st.info("No patient records found.")
+        else:
+            st.dataframe(df, use_container_width=True)
+            st.download_button(
+                "Download Patient Records CSV",
+                df.to_csv(index=False).encode("utf-8"),
+                file_name="patients.csv",
+                mime="text/csv"
+            )
+    except Exception as e:
+        st.error(f"Unable to load patients: {e}")
 
-        except Exception as e:
-            st.error(f"Error: {e}")
-                                     
-if menu == "Update Patient":
 
+# ---------- UPDATE PATIENT ----------
+elif menu == "Update Patient":
     st.subheader("Update Patient")
-
     update_id = st.text_input("Enter Patient ID")
 
-    if update_id:
+    if st.button("Find Patient"):
+        try:
+            patient = find_patient(update_id.strip())
+            if patient:
+                st.session_state["edit_patient"] = patient
+            else:
+                st.session_state.pop("edit_patient", None)
+                st.warning("Patient ID not found.")
+        except Exception as e:
+            st.error(f"Lookup failed: {e}")
 
-        result = cursor.execute(
-            "SELECT * FROM patients WHERE patient_id=?",
-            (update_id,)
-        ).fetchone()
+    patient = st.session_state.get("edit_patient")
 
-        if result:
+    if patient:
+        with st.form("update_form"):
+            new_name = st.text_input("Patient Name", patient.get("name") or "")
+            new_phone = st.text_input("Phone", patient.get("phone") or "")
+            new_address = st.text_area("Address", patient.get("address") or "")
+            save = st.form_submit_button("Save Changes")
 
-            new_name = st.text_input("Patient Name", result[1])
-            new_phone = st.text_input("Phone", result[8])
+        if save:
+            try:
+                supabase.table(TABLE).update({
+                    "name": new_name.strip(),
+                    "phone": new_phone.strip(),
+                    "address": new_address.strip()
+                }).eq("patient_id", patient["patient_id"]).execute()
 
-            if st.button("Save Changes"):
+                st.session_state.pop("edit_patient", None)
+                st.success("Patient updated successfully.")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Update failed: {e}")
 
-                cursor.execute(
-                    "UPDATE patients SET name=?, phone=? WHERE patient_id=?",
-                    (new_name, new_phone, update_id)
-                )
 
-                conn.commit()
+# ---------- DELETE PATIENT ----------
+elif menu == "Delete Patient":
+    st.subheader("Delete Patient")
+    st.warning("Deletion is permanent unless a backup is available.")
 
-                st.success("Patient Updated Successfully")
+    delete_id = st.text_input("Enter Patient ID to delete")
+    confirm = st.checkbox("I confirm that I want to permanently delete this record.")
 
+    if st.button("Delete Patient", type="primary"):
+        if not confirm:
+            st.warning("Please confirm before deleting.")
+        elif not delete_id.strip():
+            st.warning("Enter a Patient ID.")
         else:
-            st.error("Patient ID not found")
+            try:
+                patient = find_patient(delete_id.strip())
+                if not patient:
+                    st.warning("Patient not found.")
+                else:
+                    supabase.table(TABLE).delete().eq(
+                        "patient_id", delete_id.strip()
+                    ).execute()
+                    st.success("Patient record deleted.")
+            except Exception as e:
+                st.error(f"Deletion failed: {e}")
 
 
+# ---------- AI ADMISSION ASSISTANT ----------
+elif menu == "AI Admission Assistant":
+    st.subheader("AI Admission Assistant")
+    symptoms = st.text_area("Enter symptoms")
+
+    if st.button("Suggest Department"):
+        text = symptoms.lower()
+
+        if any(word in text for word in ["chest pain", "chest pressure"]):
+            st.warning("Chest pain can be an emergency. Seek urgent medical assessment.")
+            st.info("Possible department: Emergency / Cardiology")
+        elif any(word in text for word in ["fever", "cough"]):
+            st.info("Possible department: General Medicine")
+        elif any(word in text for word in ["bone", "fracture"]):
+            st.info("Possible department: Orthopedic")
+        elif any(word in text for word in ["skin", "allergy"]):
+            st.info("Possible department: Dermatology")
+        else:
+            st.info("Please consult a qualified clinician for assessment.")
 
 
+# ---------- DOCUMENT CENTER ----------
+elif menu == "Document Center":
+    st.subheader("Patient Document Upload")
+    patient_id = st.text_input("Patient ID")
+    uploaded_file = st.file_uploader(
+        "Upload document",
+        type=["pdf", "png", "jpg", "jpeg"]
+    )
+
+    if st.button("Upload Document"):
+        if not patient_id.strip() or uploaded_file is None:
+            st.warning("Enter a Patient ID and select a document.")
+        else:
+            try:
+                patient = find_patient(patient_id.strip())
+                if not patient:
+                    st.error("Patient ID not found.")
+                else:
+                    path = upload_document(patient_id.strip(), uploaded_file)
+
+                    # Store document metadata in Supabase.
+                    supabase.table("patient_documents").insert({
+                        "patient_id": patient_id.strip(),
+                        "file_name": uploaded_file.name,
+                        "storage_path": path,
+                        "uploaded_at": datetime.now().astimezone().isoformat()
+                    }).execute()
+
+                    st.success("Document uploaded successfully.")
+            except Exception as e:
+                st.error("Upload failed. Check Storage bucket and patient_documents table.")
+                st.caption(str(e))
 
 
+# ---------- DOCUMENT HISTORY ----------
+elif menu == "Document History":
+    st.subheader("Patient Document History")
+    patient_id = st.text_input("Enter Patient ID")
 
+    if st.button("Show Documents"):
+        try:
+            docs = (
+                supabase.table("patient_documents")
+                .select("*")
+                .eq("patient_id", patient_id.strip())
+                .execute()
+            )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            if not docs.data:
+                st.info("No documents found.")
+            else:
+                for doc in docs.data:
+                    st.write(doc.get("file_name", "Document"))
+                    if st.button(
+                        f"Create download link: {doc.get('file_name')}",
+                        key=f"download_{doc.get('id', doc.get('storage_path'))}"
+                    ):
+                        link = supabase.storage.from_(
+                            "patient-documents"
+                        ).create_signed_url(doc["storage_path"], 60)
+                        st.link_button(
+                            "Download document",
+                            link["signedURL"]
+                        )
+        except Exception as e:
+            st.error("Could not load document history.")
+            st.caption(str(e))
