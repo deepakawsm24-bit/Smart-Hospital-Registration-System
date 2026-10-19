@@ -91,125 +91,54 @@ if menu == "New Registration":
     )
 
     visit_type = st.radio("Visit Type",["OPD","IPD"])
-    if st.button("Register Patient"):
-        photo_path = ""
-
-        if photo is not None:
-        photo_name = getattr(photo, "name", "patient_photo.jpg")
-        photo_path = f"documents/photos/{patient_id}_{photo_name}"
-        with open(photo_path, "wb") as f:
-            f.write(photo.getbuffer())   
-        existing_patient = cursor.execute(
-            "SELECT * FROM patients WHERE aadhaar=? OR phone=?",
-            (aadhaar, phone)
-        ).fetchone()
-
-        if existing_patient:
-            st.warning("Patient Already Registered")
-
+       if st.button("Register Patient"):
+        if not name.strip() or not phone.strip():
+            st.error("Patient name and phone are required.")
         else:
-            cursor.execute(
-                "INSERT INTO patients VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    patient_id,
-                    str(name),
-                    str(dob),
-                    str(gender),
-                    str(aadhaar),
-                    str(address),
-                    str(payment_type),
-                    str(phone),
-                    str(department),
-                    str(visit_type),
-                    photo_path,
-                    str(datetime.now())
+            existing_patient = cursor.execute(
+                "SELECT * FROM patients WHERE phone=?",
+                (phone.strip(),)
+            ).fetchone()
+
+            if existing_patient:
+                st.warning("Patient already registered.")
+            else:
+                photo_path = ""
+
+                if photo is not None:
+                    os.makedirs("documents/photos", exist_ok=True)
+                    photo_name = os.path.basename(photo.name)
+                    photo_path = (
+                        f"documents/photos/{patient_id}_{photo_name}"
+                    )
+                    with open(photo_path, "wb") as f:
+                        f.write(photo.getbuffer())
+
+                cursor.execute(
+                    """INSERT INTO patients VALUES
+                    (?,?,?,?,?,?,?,?,?,?,?,?)""",
+                    (
+                        patient_id, name.strip(), str(dob),
+                        gender, aadhaar.strip(), address,
+                        payment_type, phone.strip(), department,
+                        visit_type, photo_path, str(datetime.now())
+                    )
                 )
-            )
-            if photo is not None:
-                if not os.path.exists("documents/photos"):
-                    os.makedirs("documents/photos")
-                photo_path = f"documents/photos/{patient_id}_{photo.name}"
-                with open(photo_path, "wb") as f:
-                    f.write(photo.getbuffer())
-            conn.commit()
-            st.success("Patient Registered Successfully")
-            qr_data = f"Patient ID: {patient_id}\nName: {name}\nPhone:{phone}"
-            qr = qrcode.make(qr_data)
-            buffer = BytesIO()
-            qr.save(buffer, format="PNG")
-            st.image(buffer.getvalue(),caption="Patient QR Code")
-        st.write("##Registration Details")
-        st.write("Patient ID:",patient_id)
-        st.write("Name:", name)
-        st.write("DOB:", dob)
-        st.write("Gender:", gender)
-        st.write("Aadhaar:", aadhaar)
-        st.write("Phone:", phone)
-        st.write("Address:", address)
-        st.write("Department:", department)
-        st.write("Visit Type:", visit_type)
-        st.write("Registration Time:", datetime.now())
-        st.subheader("All Patients Records")
-if  st.button("View All Patients"):
-    df = pd.read_sql_query("SELECT * FROM patients",conn)
-    st.dataframe(df)
-    excel = df.to_csv(index=False).encode('utf-8')
-    st.download_button(label="Download Patient Records", data=excel,file_name="Patients.csv",mime="text/csv")
-    st.subheader("Search Patient")
-    search_id = st.text_input("Enter Patient ID")
-    if st.button("Search Patient"):
-        result = cursor.execute("SELECT * FROM patients WHERE patient_id=?",(search_id,)).fetchone()
-        if result:
-            st.success("Patient Found")
-            st.write(result)
-        else:
-            st.error("Patient Not Found")
+                conn.commit()
+                st.success(f"Patient registered: {patient_id}")
+
+                qr_data = f"Patient ID: {patient_id}\nName: {name}"
+                qr = qrcode.make(qr_data)
+                buffer = BytesIO()
+                qr.save(buffer, format="PNG")
+                st.image(buffer.getvalue(), caption="Patient QR Code")
+       
+     
 
 
-if menu == "Delete Patient":
-    st.subheader("Delete Patient")
 
-    delete_id = st.text_input("Enter Patient ID")
-
-    if st.button("Delete Patient"):
-        cursor.execute(
-            "DELETE FROM patients WHERE patient_id=?",
-            (delete_id,)
-        )
-        conn.commit()
-
-        st.success("Patient Deleted Successfully")
-
-if menu == "Document Center":
-    st.subheader("Patient Document Upload")
-    patient_id = st.text_input("Enter Patient ID")
-    uploaded_file = st.file_uploader("Upload Aadhaar / Insurance / Lab Report", type = ["pdf", "png", "jpg", "jpeg"])
-    if uploaded_file is not None:
-        if not os.path.exists("documents"):
-            os.makedirs("documents")
-        with open(f"documents/{patient_id}_{uploaded_file.name}","wb") as f:
-            f.write(uploaded_file.getbuffer())
-        st.success("Document Uploaded Successfully")
-        st.write("Patient ID:", patient_id)
-        st.write("File Name:", uploaded_file.name)
-
-if menu == "Document History":
-    st.subheader("Patient Document History")
-
-    patient_id = st.text_input("Enter Patient ID")
-
-    if st.button("Show Documents"):
-        try:
-            import os
-
-            files = os.listdir("documents")
-            patient_files = [f for f in files if patient_id in f]
-
-            if patient_files:
-                st.success("Documents Found")
-
-                for file in patient_files:
-                    st.write(file)
+  
+            
 
                     file_path = f"documents/{file}"
 
