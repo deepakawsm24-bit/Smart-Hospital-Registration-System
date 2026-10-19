@@ -92,7 +92,7 @@ if menu == "New Registration":
 
     visit_type = st.radio("Visit Type",["OPD","IPD"])
 if st.button("Register Patient"):
-if not name.strip() or not phone.strip():
+   if not name.strip() or not phone.strip():
             st.error("Patient name and phone are required.")
         else:
             existing_patient = cursor.execute(
