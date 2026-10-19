@@ -94,7 +94,7 @@ if menu == "New Registration":
 if st.button("Register Patient"):
    if not name.strip() or not phone.strip():
             st.error("Patient name and phone are required.")
-        else:
+     else:
             existing_patient = cursor.execute(
                 "SELECT * FROM patients WHERE phone=?",
                 (phone.strip(),)
